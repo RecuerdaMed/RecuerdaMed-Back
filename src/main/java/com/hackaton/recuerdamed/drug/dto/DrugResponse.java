@@ -8,8 +8,8 @@ import java.time.LocalTime;
 public record DrugResponse(
         Long id,
         String drugName,
-        String dosage,
         String description,
+        String dosage,
         Integer frequencyHours,
         LocalTime nextIntakeTime,
         LocalDateTime startDate,
