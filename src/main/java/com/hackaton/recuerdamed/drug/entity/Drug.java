@@ -29,7 +29,7 @@ public class Drug {
     private String description;
 
     @Column(nullable = false)
-    private Double dosage;
+    private String dosage;
 
     @Column(nullable = false, name = "frequency_hours")
     private Integer frequencyHours;
@@ -45,11 +45,11 @@ public class Drug {
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean active = true;
+    private Boolean active = true;
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean activeReminder = true;
+    private Boolean activeReminder = true;
 
     @Column(nullable = false, updatable = false)
     @Builder.Default

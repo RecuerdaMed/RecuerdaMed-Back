@@ -26,6 +26,6 @@ public record DrugRequest(
         @NotNull(message = "Start date is required")
         LocalDateTime startDate,
         LocalDateTime endDate,
-        boolean activeReminder
+        Boolean activeReminder
 ) {
 }

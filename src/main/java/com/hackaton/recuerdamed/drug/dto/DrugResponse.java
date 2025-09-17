@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record DrugResponse(
+        Long id,
         String drugName,
         String dosage,
         String description,
@@ -13,8 +14,8 @@ public record DrugResponse(
         LocalTime nextIntakeTime,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        boolean active,
-        boolean activeReminder,
+        Boolean active,
+        Boolean activeReminder,
         LocalDateTime creationDate,
         LocalDateTime updateDate
 ) {
