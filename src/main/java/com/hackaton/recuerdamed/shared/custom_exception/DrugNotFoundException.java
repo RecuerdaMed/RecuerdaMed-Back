@@ -1,4 +1,4 @@
-package com.hackaton.recuerdamed.shared.exception.custom_exception;
+package com.hackaton.recuerdamed.shared.custom_exception;
 
 public class DrugNotFoundException extends RuntimeException {
     public DrugNotFoundException(String message) {

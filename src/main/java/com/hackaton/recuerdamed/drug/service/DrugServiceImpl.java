@@ -1,12 +1,14 @@
 package com.hackaton.recuerdamed.drug.service;
 
 import com.hackaton.recuerdamed.drug.dto.DrugMapper;
+import com.hackaton.recuerdamed.drug.dto.DrugRequest;
 import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
-import com.hackaton.recuerdamed.shared.exception.custom_exception.DrugNotFoundException;
+import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +24,7 @@ public class DrugServiceImpl implements DrugService {
         return drugRepository.findByActiveTrueOrderByNextIntakeTimeAsc()
                 .stream()
                 .map(drugMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -30,5 +32,13 @@ public class DrugServiceImpl implements DrugService {
         Drug drug = drugRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new DrugNotFoundException("Drug not found with ID:" + id));
         return drugMapper.toDto(drug);
+    }
+
+    @Override
+    @Transactional
+    public DrugResponse createDrug(DrugRequest request) {
+        Drug drug = drugMapper.toEntity(request);
+        Drug savedDrug = drugRepository.save(drug);
+        return drugMapper.toDto(savedDrug);
     }
 }

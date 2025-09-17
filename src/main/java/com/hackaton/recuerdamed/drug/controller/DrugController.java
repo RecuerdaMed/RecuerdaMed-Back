@@ -1,13 +1,13 @@
 package com.hackaton.recuerdamed.drug.controller;
 
+import com.hackaton.recuerdamed.drug.dto.DrugRequest;
 import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.service.DrugService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +27,11 @@ public class DrugController {
     public ResponseEntity<DrugResponse> getDrugById(@PathVariable Long id){
         DrugResponse drug = drugService.getDrugById(id);
         return ResponseEntity.ok(drug);
+    }
+
+    @PostMapping
+    public ResponseEntity<DrugResponse> createDrug(@Valid @RequestBody DrugRequest request){
+        DrugResponse drug = drugService.createDrug(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(drug);
     }
 }

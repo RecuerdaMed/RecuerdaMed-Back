@@ -4,7 +4,7 @@ import com.hackaton.recuerdamed.drug.dto.DrugMapper;
 import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
-import com.hackaton.recuerdamed.shared.exception.custom_exception.DrugNotFoundException;
+import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
