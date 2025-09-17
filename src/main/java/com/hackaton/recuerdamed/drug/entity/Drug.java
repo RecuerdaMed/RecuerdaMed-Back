@@ -1,4 +1,4 @@
-package com.hackaton.recuerdamed.entity;
+package com.hackaton.recuerdamed.drug.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ public class Drug {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "drug_name", length = 100)
+    @Column(nullable = false, name = "drug_name")
     private String drugName;
 
     @Column(columnDefinition = "TEXT")
