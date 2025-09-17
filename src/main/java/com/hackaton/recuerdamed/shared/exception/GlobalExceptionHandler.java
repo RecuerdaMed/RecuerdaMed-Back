@@ -1,6 +1,6 @@
 package com.hackaton.recuerdamed.shared.exception;
 
-import com.hackaton.recuerdamed.shared.exception.custom_exception.DrugNotFoundException;
+import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
