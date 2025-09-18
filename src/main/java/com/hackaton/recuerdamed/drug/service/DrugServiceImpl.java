@@ -41,4 +41,13 @@ public class DrugServiceImpl implements DrugService {
         Drug savedDrug = drugRepository.save(drug);
         return drugMapper.toDto(savedDrug);
     }
+
+    @Override
+    @Transactional
+    public DrugResponse updateDrug(Long id, DrugRequest request) {
+        Drug drug = drugRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new DrugNotFoundException("Drug with id:" + id + " not found"));
+        drugMapper.updateEntityFromRequest(drug, request);
+        Drug updatedDrug = drugRepository.save(drug);
+        return drugMapper.toDto(updatedDrug);
+    }
 }
