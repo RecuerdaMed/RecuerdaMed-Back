@@ -6,12 +6,15 @@ import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
 import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import java.time.LocalTime;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Unit tests for DrugServiceImpl")
 public class DrugServiceTest {
     @Mock
@@ -36,7 +40,6 @@ public class DrugServiceTest {
 
     @BeforeEach
     void setUp(){
-        MockitoAnnotations.openMocks(this);
 
         sampleDrug = Drug.builder()
                 .id(1L)
@@ -128,6 +131,17 @@ public class DrugServiceTest {
             assertEquals("Drug not found with ID:99", exception.getMessage());
             verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
             verify(drugMapper, never()).toDto(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("UpdateDrugs")
+    class UpdateDrugs{
+
+        @Test
+        @DisplayName("should update drug when drug exist")
+        void updateDrug_shouldUpdateDrug_whenDrugExist() {
+
         }
     }
 }
