@@ -269,6 +269,5 @@ public class DrugServiceTest {
             verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
             verify(drugRepository, never()).save(any());
         }
-
     }
 }

@@ -47,5 +47,9 @@ public class DrugController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PutMapping("/{id}/tomado")
+    public ResponseEntity<Void> markAsTaken(@PathVariable Long id) {
+        drugService.markAsTaken(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
