@@ -270,4 +270,61 @@ public class DrugServiceTest {
             verify(drugRepository, never()).save(any());
         }
     }
+
+    @Nested
+    @DisplayName("searchByName")
+    class SearchByNameTests {
+
+        @Test
+        @DisplayName("should return drug list when name matches")
+        void searchByName_returnsDrugList_whenNameMatches() {
+            when(drugRepository.findByDrugNameContainingIgnoreCaseAndActiveTrue("ibu")).thenReturn(List.of(sampleDrug));
+            when(drugMapper.toDto(sampleDrug)).thenReturn(sampleDrugResponse);
+
+            List<DrugResponse> result = drugService.searchByName("ibu");
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals("Ibuprofeno", result.getFirst().drugName());
+
+            verify(drugRepository).findByDrugNameContainingIgnoreCaseAndActiveTrue("ibu");
+            verify(drugMapper).toDto(sampleDrug);
+        }
+
+        @Test
+        @DisplayName("should return empty list when no drugs found")
+        void searchByName_returnsEmptyList() {
+            when(drugRepository.findByDrugNameContainingIgnoreCaseAndActiveTrue("xyz")).thenReturn(List.of());
+
+            List<DrugResponse> result = drugService.searchByName("xyz");
+
+            verify(drugMapper, never()).toDto(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("processReminders")
+    class ProcessRemindersTests {
+
+        @Test
+        @DisplayName("should process reminders when drugs exist")
+        void processReminders_withDrugs() {
+            when(drugRepository.findDrugsForReminder(any(LocalTime.class))).thenReturn(List.of(sampleDrug));
+
+            drugService.processReminders();
+
+            verify(drugRepository).findDrugsForReminder(any(LocalTime.class));
+        }
+
+        @Test
+        @DisplayName("should not fail when no drugs for reminder")
+        void processReminders_withoutDrugs() {
+            when(drugRepository.findDrugsForReminder(any(LocalTime.class))).thenReturn(List.of());
+
+            assertDoesNotThrow(() -> drugService.processReminders());
+
+            verify(drugRepository).findDrugsForReminder(any(LocalTime.class));
+        }
+    }
+
 }

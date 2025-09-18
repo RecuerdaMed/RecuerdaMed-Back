@@ -75,7 +75,7 @@ public class DrugServiceImpl implements DrugService {
 
     @Override
     @Transactional
-    public List<DrugResponse> searchByName (String drugName) {
+    public List<DrugResponse> searchByName(String drugName) {
         return drugRepository.findByDrugNameContainingIgnoreCaseAndActiveTrue(drugName).stream().map(drug -> drugMapper.toDto(drug)).toList();
     }
 
