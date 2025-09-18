@@ -74,7 +74,7 @@ public class DrugServiceTest {
     class GetAllDrugs{
         @Test
         @DisplayName("should return a list of drugs when drugs exist")
-        void getAllDrugs_returnsListOfDrug(){
+        void getAllDrugs_returnsListOfDrug() {
             when(drugRepository.findByActiveTrueOrderByNextIntakeTimeAsc())
                     .thenReturn(List.of(sampleDrug));
             when(drugMapper.toDto(sampleDrug)).thenReturn(sampleDrugResponse);
@@ -107,7 +107,7 @@ public class DrugServiceTest {
     class GetDrugById{
         @Test
         @DisplayName("should return drug when id exists")
-        void getDrugById_returnsDrug(){
+        void getDrugById_returnsDrug() {
             when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
             when(drugMapper.toDto(sampleDrug)).thenReturn(sampleDrugResponse);
 
@@ -121,7 +121,7 @@ public class DrugServiceTest {
 
         @Test
         @DisplayName("should throw DrugNotFoundException when id does not exist")
-        void getDrugById_throwsException_whenIdNotFound(){
+        void getDrugById_throwsException_whenIdNotFound() {
             when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
 
             DrugNotFoundException exception = assertThrows(DrugNotFoundException.class,
@@ -138,7 +138,7 @@ public class DrugServiceTest {
     class CreateDrugTests {
         @Test
         @DisplayName("should create a drug successfully")
-        void createDrug_success(){
+        void createDrug_success() {
             DrugRequest request = new DrugRequest(
                     "Ibuprofeno",
                     "200mg",
@@ -213,7 +213,7 @@ public class DrugServiceTest {
     class DeleteDrugTests {
         @Test
         @DisplayName("should set active to false and save drug when id exists")
-        void deleteDrug_success(){
+        void deleteDrug_success() {
             when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
 
             drugService.deleteDrug(1L);
@@ -225,7 +225,7 @@ public class DrugServiceTest {
 
         @Test
         @DisplayName("should throw DrugNotFoundException when id does not exist")
-        void deleteDrug_notFound(){
+        void deleteDrug_notFound() {
             when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
 
             DrugNotFoundException exception = assertThrows(DrugNotFoundException.class,
@@ -326,5 +326,4 @@ public class DrugServiceTest {
             verify(drugRepository).findDrugsForReminder(any(LocalTime.class));
         }
     }
-
 }
