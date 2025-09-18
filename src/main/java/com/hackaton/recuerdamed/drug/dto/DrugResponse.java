@@ -1,7 +1,5 @@
 package com.hackaton.recuerdamed.drug.dto;
 
-import jakarta.validation.constraints.*;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 

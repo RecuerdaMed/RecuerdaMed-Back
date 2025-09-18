@@ -5,6 +5,7 @@ import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.service.DrugService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/medicamentos")
+@Slf4j
 public class DrugController {
     private final DrugService drugService;
 
@@ -52,4 +54,17 @@ public class DrugController {
         drugService.markAsTaken(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<DrugResponse>> searchByName(String drugName) {
+        List<DrugResponse> drugs = drugService.searchByName(drugName);
+        return ResponseEntity.status(HttpStatus.OK).body(drugs);
+    }
+
+    @PostMapping("/recordatorios")
+    public ResponseEntity<Void> processReminders() {
+        drugService.processReminders();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }

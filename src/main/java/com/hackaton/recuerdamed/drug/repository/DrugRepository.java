@@ -13,4 +13,8 @@ import java.util.Optional;
 public interface DrugRepository extends JpaRepository<Drug, Long> {
     List<Drug> findByActiveTrueOrderByNextIntakeTimeAsc();
     Optional<Drug> findByIdAndActiveTrue(Long id);
+    List<Drug> findByDrugNameContainingIgnoreCaseAndActiveTrue(String drugName);
+
+    @Query("SELECT m FROM Drug m WHERE m.active = true AND m.reminderActive = true AND m.nextIntake <= :currentTime")
+    List<Drug> findDrugsForReminder(LocalTime currentTime);
 }
