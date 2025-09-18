@@ -316,4 +316,28 @@ public class DrugControllerIntegrationTest {
                     .andExpect(status().isNotFound());
         }
     }
+
+    @Nested
+    @DisplayName("PUT /medicamentos/{id}/tomado")
+    class MarkAsTakenTests{
+        @Test
+        @DisplayName("should mark drug as taken and update nextIntakeTime, returning 200")
+        void markAsTaken_success() throws Exception{
+            mockMvc.perform(put("/medicamentos/1/tomado"))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/medicamentos/1"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.id", is(1)))
+                    .andExpect(jsonPath("$.nextIntakeTime", is("16:00:00")));
+        }
+
+        @Test
+        @DisplayName("should return 404 when trying to mark non-existing drug as taken")
+        void markAsTaken_notFound() throws Exception{
+            mockMvc.perform(put("/medicamentos/99/tomado"))
+                    .andExpect(status().isNotFound());
+        }
+    }
 }
