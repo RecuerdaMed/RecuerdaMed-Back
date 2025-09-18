@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
@@ -134,14 +133,5 @@ public class DrugServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("UpdateDrugs")
-    class UpdateDrugs{
 
-        @Test
-        @DisplayName("should update drug when drug exist")
-        void updateDrug_shouldUpdateDrug_whenDrugExist() {
-
-        }
-    }
 }
