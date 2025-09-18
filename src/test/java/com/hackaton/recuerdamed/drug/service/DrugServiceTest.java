@@ -177,4 +177,34 @@ public class DrugServiceTest {
             verify(drugRepository, never()).save(any());
         }
     }
+
+    @Nested
+    @DisplayName("deleteDrug")
+    class DeleteDrugTests {
+        @Test
+        @DisplayName("should set active to false and save drug when id exists")
+        void deleteDrug_success(){
+            when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
+
+            drugService.deleteDrug(1L);
+
+            assertFalse(sampleDrug.getActive());
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
+            verify(drugRepository, times(1)).save(sampleDrug);
+        }
+        
+        @Test
+        @DisplayName("should throw DrugNotFoundException when id does not exist")
+        void deleteDrug_notFound(){
+            when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+
+            DrugNotFoundException exception = assertThrows(DrugNotFoundException.class,
+                    () -> drugService.deleteDrug(99L)
+            );
+
+            assertEquals("Drug not found with ID: 99", exception.getMessage());
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
+            verify(drugRepository, never()).save(any());
+        }
+    }
 }

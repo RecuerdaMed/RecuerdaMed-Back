@@ -35,9 +35,16 @@ public class DrugController {
         return ResponseEntity.status(HttpStatus.CREATED).body(drug);
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<DrugResponse> updateDrug(@PathVariable Long id, @Valid @RequestBody DrugRequest request) {
         DrugResponse drug = drugService.updateDrug(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(drug);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDrug(@PathVariable Long id){
+        drugService.deleteDrug(id);
+        return ResponseEntity.noContent().build();
     }
 }
