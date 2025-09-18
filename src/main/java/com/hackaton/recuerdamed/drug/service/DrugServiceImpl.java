@@ -71,4 +71,10 @@ public class DrugServiceImpl implements DrugService {
         drug.setNextIntakeTime(nextIntake);
         drugRepository.save(drug);
     }
+
+    @Override
+    @Transactional
+    public List<DrugResponse> searchByName (String drugName) {
+        return drugRepository.findByNameContainingIgnoreCaseAndActiveTrue(drugName).stream().map(drug -> drugMapper.toDto(drug)).toList();
+    }
 }

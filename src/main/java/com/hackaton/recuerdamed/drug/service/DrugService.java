@@ -17,4 +17,6 @@ public interface DrugService {
     void deleteDrug(Long id);
 
     void markAsTaken(Long id);
+
+    List<DrugResponse> searchByName (String drugName);
 }
