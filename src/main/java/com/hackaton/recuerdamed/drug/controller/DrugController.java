@@ -58,4 +58,6 @@ public class DrugController {
         List<DrugResponse> drugs = drugService.searchByName(drugName);
         return ResponseEntity.status(HttpStatus.OK).body(drugs);
     }
+
+
 }

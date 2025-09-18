@@ -19,4 +19,6 @@ public interface DrugService {
     void markAsTaken(Long id);
 
     List<DrugResponse> searchByName (String drugName);
+
+    void processReminders();
 }

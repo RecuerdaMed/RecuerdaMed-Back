@@ -7,6 +7,7 @@ import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
 import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DrugServiceImpl implements DrugService {
     private final DrugRepository drugRepository;
     private final DrugMapper drugMapper;
@@ -75,5 +77,15 @@ public class DrugServiceImpl implements DrugService {
     @Transactional
     public List<DrugResponse> searchByName (String drugName) {
         return drugRepository.findByDrugNameContainingIgnoreCaseAndActiveTrue(drugName).stream().map(drug -> drugMapper.toDto(drug)).toList();
+    }
+
+    @Override
+    @Transactional
+    public void processReminders() {
+        LocalTime currentTime = LocalTime.now();
+        List<Drug> drugsForReminder = drugRepository.findDrugsForReminder(currentTime);
+        for(Drug drug : drugsForReminder) {
+            log.info("Recordatorio: Hora de tomar {} - {}", drug.getDrugName(), drug.getDosage());
+        }
     }
 }
