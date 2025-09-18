@@ -11,4 +11,6 @@ public interface DrugService {
     DrugResponse getDrugById(Long id);
 
     DrugResponse createDrug(DrugRequest request);
+
+    void deleteDrug(Long id);
 }
