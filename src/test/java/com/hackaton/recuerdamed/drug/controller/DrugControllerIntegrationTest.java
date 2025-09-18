@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,6 +63,12 @@ public class DrugControllerIntegrationTest {
                 .content(asJsonString(body)));
     }
 
+    private ResultActions performPutRequest(Long id, Object body) throws Exception{
+        return mockMvc.perform(put("/medicamentos/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(body)));
+    }
+
     @Nested
     @DisplayName("GET /medicamentos")
     class GetAllDrugsTests {
@@ -80,7 +87,6 @@ public class DrugControllerIntegrationTest {
     @Nested
     @DisplayName("GET /medicamentos/{id}")
     class GetDrugByIdTests {
-
         @Test
         @DisplayName("should return drug details when the id exists")
         void getDrugById_returnsDrugDetails() throws Exception {
@@ -207,6 +213,90 @@ public class DrugControllerIntegrationTest {
     }
 
     @Nested
+    @DisplayName("PUT /medicamentos/{id}")
+    class UpdateDurgTests {
+        @Test
+        @DisplayName("should update drug successfully and return 200")
+        void updateDrug_success() throws Exception{
+            DrugRequest request = new DrugRequest(
+                    "Paracetamol Actualizado",
+                    "650mg",
+                    "Actualizado: analgésico más potente",
+                    6,
+                    LocalTime.of(10, 0),
+                    LocalDateTime.of(2025, 9, 20, 10, 0),
+                    LocalDateTime.of(2025, 9, 25, 10, 0),
+                    false
+            );
+
+            performPutRequest(1L, request)
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.id", is(1)))
+                    .andExpect(jsonPath("$.drugName", is("Paracetamol Actualizado")))
+                    .andExpect(jsonPath("$.dosage", is("650mg")))
+                    .andExpect(jsonPath("$.description", is("Actualizado: analgésico más potente")))
+                    .andExpect(jsonPath("$.frequencyHours", is(6)))
+                    .andExpect(jsonPath("$.nextIntakeTime", is("10:00:00")))
+                    .andExpect(jsonPath("$.activeReminder", is(false)));
+        }
+
+        @Test
+        @DisplayName("should return 404 when trying to update non-existing drug")
+        void updateDrug_notFound() throws Exception{
+            DrugRequest request = new DrugRequest(
+                    "Nuevo Medicamento",
+                    "200mg",
+                    "Descripción",
+                    8,
+                    LocalTime.of(8, 0),
+                    LocalDateTime.of(2025, 9, 20, 8, 0),
+                    LocalDateTime.of(2025, 9, 22, 8, 0),
+                    true
+            );
+
+            performPutRequest(99L, request)
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("should return 400 when updating with invalid data (missing drugName)")
+        void updateDrug_invalidData_returnsBadRequest() throws Exception{
+            DrugRequest request = new DrugRequest(
+                    "",
+                    "500mg",
+                    "Descripción inválida",
+                    8,
+                    LocalTime.of(8, 0),
+                    LocalDateTime.of(2025, 9, 20, 8, 0),
+                    null,
+                    true
+            );
+
+            performPutRequest(1L, request)
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("should return 400 when updating with invalid frequencyHours")
+        void updateDrug_invalidFrequency_returnsBadRequest() throws Exception{
+            DrugRequest request = new DrugRequest(
+                    "Ibuprofeno",
+                    "400mg",
+                    "Frecuencia inválida",
+                    0,
+                    LocalTime.of(12, 0),
+                    LocalDateTime.of(2025, 9, 20, 12, 0),
+                    null,
+                    true
+            );
+
+            performPutRequest(1L, request)
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
     @DisplayName("DELETE /medicamentos/{id}")
     class DeleteDrugTests {
         @Test
@@ -223,6 +313,30 @@ public class DrugControllerIntegrationTest {
         @DisplayName("should return 404 when trying to delete non-existing drug")
         void deleteDrug_notFound() throws Exception{
             mockMvc.perform(delete("/medicamentos/99"))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("PUT /medicamentos/{id}/tomado")
+    class MarkAsTakenTests{
+        @Test
+        @DisplayName("should mark drug as taken and update nextIntakeTime, returning 200")
+        void markAsTaken_success() throws Exception{
+            mockMvc.perform(put("/medicamentos/1/tomado"))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/medicamentos/1"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.id", is(1)))
+                    .andExpect(jsonPath("$.nextIntakeTime", is("16:00:00")));
+        }
+
+        @Test
+        @DisplayName("should return 404 when trying to mark non-existing drug as taken")
+        void markAsTaken_notFound() throws Exception{
+            mockMvc.perform(put("/medicamentos/99/tomado"))
                     .andExpect(status().isNotFound());
         }
     }
