@@ -127,7 +127,7 @@ public class DrugServiceTest {
             DrugNotFoundException exception = assertThrows(DrugNotFoundException.class,
                     () -> drugService.getDrugById(99L));
 
-            assertEquals("Drug not found with ID:99", exception.getMessage());
+            assertEquals("Drug with ID: 99 not found", exception.getMessage());
             verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
             verify(drugMapper, never()).toDto(any());
         }
@@ -166,7 +166,7 @@ public class DrugServiceTest {
 
     @Nested
     @DisplayName("updateDrug")
-    class UpdateDrug {
+    class UpdateDrugTests {
 
         @Test
         @DisplayName("should update drug when drug exist")
@@ -188,12 +188,12 @@ public class DrugServiceTest {
             assertTrue(result.activeReminder());
 
             verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
-            verify(drugRepository, times(1)).save(any(Drug.class));
+            verify(drugRepository, times(1)).save(sampleDrug);
             verify(drugMapper).toDto(any());
         }
 
         @Test
-        @DisplayName("should throw DrugNotFoundException when drug not found")
+        @DisplayName("should throw DrugNotFoundException when id does not exist")
         void updateDrug_shouldThrowException_whenDrugNotFound() {
             DrugRequest request = new DrugRequest("Otro", "otra descripción", "600 mg", 12, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(3), false);
 
@@ -232,7 +232,40 @@ public class DrugServiceTest {
                     () -> drugService.deleteDrug(99L)
             );
 
-            assertEquals("Drug not found with ID: 99", exception.getMessage());
+            assertEquals("Drug with ID: 99 not found", exception.getMessage());
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
+            verify(drugRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("markAsTaken")
+    class MarkAsTakenTests {
+
+        @Test
+        @DisplayName("should update nextIntakeTime when drug exist")
+        void markAsTaken_shouldUpdateNextIntakeTime_whenDrugExists() {
+            when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
+            when(drugRepository.save(any(Drug.class))).thenReturn(sampleDrug);
+
+            LocalTime initialNextIntake = sampleDrug.getNextIntakeTime();
+
+            drugService.markAsTaken(1L);
+
+            assertEquals(initialNextIntake.plusHours(sampleDrug.getFrequencyHours()), sampleDrug.getNextIntakeTime());
+
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
+            verify(drugRepository, times(1)).save(sampleDrug);
+        }
+
+        @Test
+        @DisplayName("should throw DrugNotFoundException when id does not exist")
+        void markAsTaken_throwsException_whenDrugNotFound() {
+            when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+
+            DrugNotFoundException exception = assertThrows(DrugNotFoundException.class, () -> drugService.deleteDrug(99L));
+
+            assertEquals("Drug with ID: 99 not found", exception.getMessage());
             verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
             verify(drugRepository, never()).save(any());
         }

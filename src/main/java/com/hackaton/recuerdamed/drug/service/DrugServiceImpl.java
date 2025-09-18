@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class DrugServiceImpl implements DrugService {
     @Override
     public DrugResponse getDrugById(Long id) {
         Drug drug = drugRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new DrugNotFoundException("Drug not found with ID:" + id));
+                .orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
         return drugMapper.toDto(drug);
     }
 
@@ -45,7 +46,8 @@ public class DrugServiceImpl implements DrugService {
     @Override
     @Transactional
     public DrugResponse updateDrug(Long id, DrugRequest request) {
-        Drug drug = drugRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
+        Drug drug = drugRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
         drugMapper.updateEntityFromRequest(drug, request);
         Drug updatedDrug = drugRepository.save(drug);
         return drugMapper.toDto(updatedDrug);
@@ -55,9 +57,18 @@ public class DrugServiceImpl implements DrugService {
     @Transactional
     public void deleteDrug(Long id) {
         Drug drug = drugRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new DrugNotFoundException("Drug not found with ID: " + id));
+                .orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
 
         drug.setActive(false);
+        drugRepository.save(drug);
+    }
+
+    @Override
+    @Transactional
+    public void markAsTaken(Long id) {
+        Drug drug = drugRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
+        LocalTime nextIntake = drug.getNextIntakeTime().plusHours(drug.getFrequencyHours());
+        drug.setNextIntakeTime(nextIntake);
         drugRepository.save(drug);
     }
 }

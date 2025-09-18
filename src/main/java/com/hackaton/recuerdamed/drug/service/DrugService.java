@@ -15,4 +15,6 @@ public interface DrugService {
     DrugResponse updateDrug(Long id, DrugRequest request);
 
     void deleteDrug(Long id);
+
+    void markAsTaken(Long id);
 }
