@@ -1,6 +1,7 @@
 package com.hackaton.recuerdamed.drug.service;
 
 import com.hackaton.recuerdamed.drug.dto.DrugMapper;
+import com.hackaton.recuerdamed.drug.dto.DrugRequest;
 import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -133,5 +133,64 @@ public class DrugServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("createDrug")
+    class CreateDrugTests {
+        @Test
+        @DisplayName("should create a drug successfully")
+        void createDrug_success(){
+            DrugRequest request = new DrugRequest(
+                    "Ibuprofeno",
+                    "200mg",
+                    "Para el dolor",
+                    8,
+                    LocalTime.of(10, 0),
+                    LocalDateTime.now(),
+                    LocalDateTime.now().plusDays(5),
+                    true
+            );
 
+            when(drugMapper.toEntity(request)).thenReturn(sampleDrug);
+            when(drugRepository.save(sampleDrug)).thenReturn(sampleDrug);
+            when(drugMapper.toDto(sampleDrug)).thenReturn(sampleDrugResponse);
+
+            DrugResponse result = drugService.createDrug(request);
+
+            assertNotNull(result);
+            assertEquals("Ibuprofeno", result.drugName());
+            verify(drugMapper, times(1)).toEntity(request);
+            verify(drugRepository, times(1)).save(sampleDrug);
+            verify(drugMapper, times(1)).toDto(sampleDrug);
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteDrug")
+    class DeleteDrugTests {
+        @Test
+        @DisplayName("should set active to false and save drug when id exists")
+        void deleteDrug_success(){
+            when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
+
+            drugService.deleteDrug(1L);
+
+            assertFalse(sampleDrug.getActive());
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
+            verify(drugRepository, times(1)).save(sampleDrug);
+        }
+
+        @Test
+        @DisplayName("should throw DrugNotFoundException when id does not exist")
+        void deleteDrug_notFound(){
+            when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+
+            DrugNotFoundException exception = assertThrows(DrugNotFoundException.class,
+                    () -> drugService.deleteDrug(99L)
+            );
+
+            assertEquals("Drug not found with ID: 99", exception.getMessage());
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
+            verify(drugRepository, never()).save(any());
+        }
+    }
 }

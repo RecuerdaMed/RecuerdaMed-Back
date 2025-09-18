@@ -41,4 +41,13 @@ public class DrugServiceImpl implements DrugService {
         Drug savedDrug = drugRepository.save(drug);
         return drugMapper.toDto(savedDrug);
     }
+
+    @Override
+    public void deleteDrug(Long id) {
+        Drug drug = drugRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new DrugNotFoundException("Drug not found with ID: " + id));
+
+        drug.setActive(false);
+        drugRepository.save(drug);
+    }
 }

@@ -34,4 +34,10 @@ public class DrugController {
         DrugResponse drug = drugService.createDrug(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(drug);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDrug(@PathVariable Long id){
+        drugService.deleteDrug(id);
+        return ResponseEntity.noContent().build();
+    }
 }
