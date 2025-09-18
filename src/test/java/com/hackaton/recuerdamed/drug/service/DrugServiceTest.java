@@ -173,7 +173,7 @@ public class DrugServiceTest {
 
             drugService.deleteDrug(1L);
 
-            assertFalse(sampleDrug.getActive());
+            assertFalse(sampleDrug.getActive(), "Drug should be marked as inactive");
             verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
             verify(drugRepository, times(1)).save(sampleDrug);
         }
