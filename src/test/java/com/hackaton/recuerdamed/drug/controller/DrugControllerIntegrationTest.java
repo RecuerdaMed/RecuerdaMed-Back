@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -202,6 +203,27 @@ public class DrugControllerIntegrationTest {
             );
             performPostRequest(request)
                     .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /medicamentos/{id}")
+    class DeleteDrugTests {
+        @Test
+        @DisplayName("should delete drug (set active to false) and return 204")
+        void deleteDrug_success() throws Exception{
+            mockMvc.perform(delete("/medicamentos/1"))
+                    .andExpect(status().isNoContent());
+
+            mockMvc.perform(get("/medicamentos/1"))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("should return 404 when trying to delete non-existing drug")
+        void deleteDrug_notFound() throws Exception{
+            mockMvc.perform(delete("/medicamentos/99"))
+                    .andExpect(status().isNotFound());
         }
     }
 }
