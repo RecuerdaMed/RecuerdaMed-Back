@@ -34,4 +34,10 @@ public class DrugController {
         DrugResponse drug = drugService.createDrug(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(drug);
     }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<DrugResponse> updateDrug(@PathVariable Long id, @Valid @RequestBody DrugRequest request) {
+        DrugResponse drug = drugService.updateDrug(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(drug);
+    }
 }
