@@ -46,4 +46,6 @@ public class DrugController {
         drugService.deleteDrug(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }
