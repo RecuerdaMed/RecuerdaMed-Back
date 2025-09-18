@@ -1,6 +1,7 @@
 package com.hackaton.recuerdamed.drug.service;
 
 import com.hackaton.recuerdamed.drug.dto.DrugMapper;
+import com.hackaton.recuerdamed.drug.dto.DrugRequest;
 import com.hackaton.recuerdamed.drug.dto.DrugResponse;
 import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
@@ -133,5 +134,30 @@ public class DrugServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("updateDrug")
+    class UpdateDrug {
 
+        @Test
+        @DisplayName("should update drug when drug exist")
+        void updateDrug_shouldUpdateDrug_whenDrugExist() {
+            DrugRequest request = new DrugRequest("Ibuprofeno modificado", "antiinflamatorio", "400 mg", 6, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(7), true);
+
+            when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
+            when(drugRepository.save(any(Drug.class))).thenReturn(sampleDrug);
+
+            DrugResponse result = drugService.updateDrug(1L, request);
+
+            assertNotNull(result);
+            assertEquals("Ibuprofeno modificado", result.drugName());
+            assertEquals("antiinflamatorio", result.description());
+            assertEquals("400mg", result.dosage());
+            assertEquals(6, result.frequencyHours());
+            assertEquals(LocalTime.of(12, 0), result.nextIntakeTime());
+            assertTrue(result.activeReminder());
+
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
+            verify(drugRepository, times(1)).save(any(Drug.class));
+        }
+    }
 }
