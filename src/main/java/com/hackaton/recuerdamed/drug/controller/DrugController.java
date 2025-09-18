@@ -52,4 +52,10 @@ public class DrugController {
         drugService.markAsTaken(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<DrugResponse>> searchByName(String drugName) {
+        List<DrugResponse> drugs = drugService.searchByName(drugName);
+        return ResponseEntity.status(HttpStatus.OK).body(drugs);
+    }
 }
