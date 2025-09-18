@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +74,6 @@ public class DrugServiceImpl implements DrugService {
     @Override
     @Transactional
     public List<DrugResponse> searchByName (String drugName) {
-        return drugRepository.findByNameContainingIgnoreCaseAndActiveTrue(drugName).stream().map(drug -> drugMapper.toDto(drug)).toList();
+        return drugRepository.findByDrugNameContainingIgnoreCaseAndActiveTrue(drugName).stream().map(drug -> drugMapper.toDto(drug)).toList();
     }
 }
