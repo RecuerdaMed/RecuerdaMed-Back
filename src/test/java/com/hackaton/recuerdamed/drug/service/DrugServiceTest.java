@@ -159,5 +159,19 @@ public class DrugServiceTest {
             verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
             verify(drugRepository, times(1)).save(any(Drug.class));
         }
+
+        @Test
+        @DisplayName("should throw DrugNotFoundException when drug not found")
+        void updateDrug_shouldThrowException_whenDrugNotFound() {
+            DrugRequest request = new DrugRequest("Otro", "otra descripción", "600 mg", 12, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(3), false);
+
+            when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+            DrugNotFoundException exception = assertThrows(DrugNotFoundException.class, ()-> drugService.updateDrug(99L, request));
+
+            assertEquals("Drug with ID: 99 not found", exception.getMessage());
+
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
+            verify(drugRepository, never()).save(any());
+         }
     }
 }

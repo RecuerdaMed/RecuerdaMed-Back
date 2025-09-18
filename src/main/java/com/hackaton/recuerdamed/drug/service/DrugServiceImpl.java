@@ -45,7 +45,7 @@ public class DrugServiceImpl implements DrugService {
     @Override
     @Transactional
     public DrugResponse updateDrug(Long id, DrugRequest request) {
-        Drug drug = drugRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new DrugNotFoundException("Drug with id:" + id + " not found"));
+        Drug drug = drugRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new DrugNotFoundException("Drug with ID: " + id + " not found"));
         drugMapper.updateEntityFromRequest(drug, request);
         Drug updatedDrug = drugRepository.save(drug);
         return drugMapper.toDto(updatedDrug);
