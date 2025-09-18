@@ -145,19 +145,21 @@ public class DrugServiceTest {
 
             when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
             when(drugRepository.save(any(Drug.class))).thenReturn(sampleDrug);
+            when(drugMapper.toDto(any(Drug.class))).thenReturn( new DrugResponse(1L, "Ibuprofeno modificado", "antiinflamatorio", "400 mg", 6, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(7), true, true, null, null));
 
             DrugResponse result = drugService.updateDrug(1L, request);
 
             assertNotNull(result);
             assertEquals("Ibuprofeno modificado", result.drugName());
             assertEquals("antiinflamatorio", result.description());
-            assertEquals("400mg", result.dosage());
+            assertEquals("400 mg", result.dosage());
             assertEquals(6, result.frequencyHours());
             assertEquals(LocalTime.of(12, 0), result.nextIntakeTime());
             assertTrue(result.activeReminder());
 
             verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
             verify(drugRepository, times(1)).save(any(Drug.class));
+            verify(drugMapper).toDto(any());
         }
 
         @Test
@@ -166,12 +168,13 @@ public class DrugServiceTest {
             DrugRequest request = new DrugRequest("Otro", "otra descripción", "600 mg", 12, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(3), false);
 
             when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+
             DrugNotFoundException exception = assertThrows(DrugNotFoundException.class, ()-> drugService.updateDrug(99L, request));
 
             assertEquals("Drug with ID: 99 not found", exception.getMessage());
 
             verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
             verify(drugRepository, never()).save(any());
-         }
+        }
     }
 }
