@@ -7,12 +7,13 @@ import com.hackaton.recuerdamed.drug.entity.Drug;
 import com.hackaton.recuerdamed.drug.repository.DrugRepository;
 import com.hackaton.recuerdamed.shared.custom_exception.DrugNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
+import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import java.time.LocalTime;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Unit tests for DrugServiceImpl")
 public class DrugServiceTest {
     @Mock
@@ -37,7 +39,6 @@ public class DrugServiceTest {
 
     @BeforeEach
     void setUp(){
-        MockitoAnnotations.openMocks(this);
 
         sampleDrug = Drug.builder()
                 .id(1L)
@@ -164,6 +165,50 @@ public class DrugServiceTest {
     }
 
     @Nested
+    @DisplayName("updateDrug")
+    class UpdateDrug {
+
+        @Test
+        @DisplayName("should update drug when drug exist")
+        void updateDrug_shouldUpdateDrug_whenDrugExist() {
+            DrugRequest request = new DrugRequest("Ibuprofeno modificado", "antiinflamatorio", "400 mg", 6, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(7), true);
+
+            when(drugRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(sampleDrug));
+            when(drugRepository.save(any(Drug.class))).thenReturn(sampleDrug);
+            when(drugMapper.toDto(any(Drug.class))).thenReturn( new DrugResponse(1L, "Ibuprofeno modificado", "antiinflamatorio", "400 mg", 6, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(7), true, true, null, null));
+
+            DrugResponse result = drugService.updateDrug(1L, request);
+
+            assertNotNull(result);
+            assertEquals("Ibuprofeno modificado", result.drugName());
+            assertEquals("antiinflamatorio", result.description());
+            assertEquals("400 mg", result.dosage());
+            assertEquals(6, result.frequencyHours());
+            assertEquals(LocalTime.of(12, 0), result.nextIntakeTime());
+            assertTrue(result.activeReminder());
+
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
+            verify(drugRepository, times(1)).save(any(Drug.class));
+            verify(drugMapper).toDto(any());
+        }
+
+        @Test
+        @DisplayName("should throw DrugNotFoundException when drug not found")
+        void updateDrug_shouldThrowException_whenDrugNotFound() {
+            DrugRequest request = new DrugRequest("Otro", "otra descripción", "600 mg", 12, LocalTime.of(12,0), LocalDateTime.now(), LocalDateTime.now().plusDays(3), false);
+
+            when(drugRepository.findByIdAndActiveTrue(99L)).thenReturn(Optional.empty());
+
+            DrugNotFoundException exception = assertThrows(DrugNotFoundException.class, ()-> drugService.updateDrug(99L, request));
+
+            assertEquals("Drug with ID: 99 not found", exception.getMessage());
+
+            verify(drugRepository, times(1)).findByIdAndActiveTrue(99L);
+            verify(drugRepository, never()).save(any());
+        }
+    }
+
+    @Nested
     @DisplayName("deleteDrug")
     class DeleteDrugTests {
         @Test
@@ -177,7 +222,7 @@ public class DrugServiceTest {
             verify(drugRepository, times(1)).findByIdAndActiveTrue(1L);
             verify(drugRepository, times(1)).save(sampleDrug);
         }
-        
+
         @Test
         @DisplayName("should throw DrugNotFoundException when id does not exist")
         void deleteDrug_notFound(){
