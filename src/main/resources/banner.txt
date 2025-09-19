@@ -5,6 +5,8 @@ ${AnsiColor.CYAN}
  _/    _/  _/        _/        _/    _/  _/        _/        _/    _/  _/    _/  _/      _/  _/        _/    _/
 _/    _/    _/_/_/    _/_/_/    _/_/_/    _/_/_/  _/          _/_/_/    _/_/_/  _/      _/    _/_/_/    _/_/_/
 
-${AnsiColor.MAGENTA}
+-------------------------------------------------------------------------------------------------------------------
+${application.title} ${application.version}. Licensed under the ${license.title} License, Version ${license.version}.
 Powered by Spring Boot ${spring-boot.version}
+-------------------------------------------------------------------------------------------------------------------
 ${AnsiColor.DEFAULT}
